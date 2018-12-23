@@ -14,6 +14,6 @@
 
  常工作，将有可能导致终端设备无法再次进行双向通信。
 
-![image]( https://github.com/bingoiot/EV-Z-Stack-HA-1.2.2a/img/img1.png)
+![image](https://github.com/bingoiot/EV-Z-Stack-HA-1.2.2a/blob/master/img/img1.png)
 
-![image]( https://github.com/bingoiot/EV-Z-Stack-HA-1.2.2a/img/img2.png)
+![image](https://github.com/bingoiot/EV-Z-Stack-HA-1.2.2a/blob/master/img/img2.png)
