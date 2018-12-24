@@ -2285,9 +2285,69 @@ ZStatus_t ZDO_NetworkDiscoveryConfirmCB(uint8 status)
  * @return      ZStatus_t
  */
 #define STACK_PROFILE_MAX 2
+static uint8 ZDApp_CheckListExist(networkDesc_t **pdesc, uint8 num,networkDesc_t *p);
+static networkDesc_t  **ZDApp_ShortDeviceDesc(networkDesc_t *plist,uint8 num);
+
+static uint8 ZDApp_CheckListExist(networkDesc_t **pdesc, uint8 num,networkDesc_t *p)
+{
+  uint8 i;
+  for(i=0;i<num;i++)
+  {
+    if(pdesc[i]==p)
+      return 0x01;
+  }
+  return 0x00;
+}
+static networkDesc_t  **ZDApp_ShortDeviceDesc(networkDesc_t *plist,uint8 num)
+{
+  networkDesc_t **pResult;
+  networkDesc_t *pcur = NULL;
+  networkDesc_t *porder;
+  uint8 i;
+  uint8 maxLqi;
+  pResult = (networkDesc_t**)osal_mem_alloc(sizeof(networkDesc_t*)*num);
+  if(pResult!=NULL)
+  {
+    for(i=0;i<num;i++)
+    {
+      pcur = plist;
+      porder = pcur;
+      maxLqi = 0x00;
+      while(pcur!=NULL)
+      {
+        if(!ZDApp_CheckListExist(pResult,i,pcur))//check repeat
+        {
+          if(maxLqi<=pcur->chosenRouterLinkQuality)//check max 
+          {
+            maxLqi = pcur->chosenRouterLinkQuality;
+            porder = pcur;
+          }
+        }
+        pcur = pcur->nextDesc;
+      }
+      pResult[i] = porder;
+    }
+  }
+  return pResult;
+}
+static void dump_decList(networkDesc_t**plist, uint8 num);
+static void dump_decList(networkDesc_t**plist, uint8 num)
+{
+#if DBG_ZDO
+  networkDesc_t *pNwkDesc;
+  uint8 i;
+  for(i=0;i<num;i++)
+  {
+    pNwkDesc = plist[i];
+    osLogI(DBG_ZDO,"addr:%04x, ch:%d, panID:%04x, lqi:%d ,cap:%02x, deep:%02x \r\n",
+        pNwkDesc->chosenRouter,pNwkDesc->logicalChannel,pNwkDesc->panId,pNwkDesc->chosenRouterLinkQuality,pNwkDesc->deviceCapacity,pNwkDesc->chosenRouterDepth);
+  }
+#endif
+}
 networkDesc_t* ZDApp_NwkDescListProcessing(void)
 {
   networkDesc_t *pNwkDesc;
+  networkDesc_t **pList;
   uint8 i, ResultCount = 0;
   uint8 stackProfile;
   uint8 stackProfilePro;
@@ -2300,7 +2360,14 @@ networkDesc_t* ZDApp_NwkDescListProcessing(void)
     ResultCount++;
     pNwkDesc = pNwkDesc->nextDesc;
   }
-
+  if(ResultCount==0)return NULL;
+  pList = ZDApp_ShortDeviceDesc(nwk_getNwkDescList(),ResultCount);
+  if(pList==NULL)
+  {
+    nwk_desc_list_free();
+    return (NULL);
+  }
+  dump_decList(pList,ResultCount);
   // process discovery results
   stackProfilePro = FALSE;
   selected = FALSE;
@@ -2308,10 +2375,11 @@ networkDesc_t* ZDApp_NwkDescListProcessing(void)
 
   for ( stackProfile = 0; stackProfile < STACK_PROFILE_MAX; stackProfile++ )
   {
-    pNwkDesc = nwk_getNwkDescList();
-    for ( i = 0; i < ResultCount; i++, pNwkDesc = pNwkDesc->nextDesc )
+    //pNwkDesc = nwk_getNwkDescList();
+    for ( i = 0; i < ResultCount; i++)
     {
-       if ( nwk_ExtPANIDValid( ZDO_UseExtendedPANID ) == true )
+      pNwkDesc = pList[i];//nwk_getNwkDescList();
+      if ( nwk_ExtPANIDValid( ZDO_UseExtendedPANID ) == true )
       {
         // If the extended Pan ID is commissioned to a non zero value
         // Only join the Pan that has match EPID
@@ -2389,7 +2457,7 @@ networkDesc_t* ZDApp_NwkDescListProcessing(void)
       break;
     }
   }
-
+  osal_mem_free(pList);
   if ( i == ResultCount )
   {
     nwk_desc_list_free();

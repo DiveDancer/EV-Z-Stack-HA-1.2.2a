@@ -1,8 +1,12 @@
 # ZStack Home Automation for jifan evaluation board by Texas Instruments Z-Stack1.2.2a
 
-* ZigbeeMaster.exe 用于测试Zigbee协调器程序。如果你想要获取ZigbeeMaster的源码请打开https://github.com/bingoiot/ZigbeeMaster-for-PC
+* ZigbeeMaster.exe 用于测试Zigbee协调器与设备的PC端程序。  
+如果你想要获取ZigbeeMaster的源码请打开:  
+https://github.com/bingoiot/ZigbeeMaster-for-PC
 
-* 程序仅用于开发板的评估使用，没有做过任何优化。如果你想让你的zigbee程序拥有更好的体验请联系我们www.afteriot.com/
+* 程序仅用于开发板的评估使用，仅对设备扫描入网进行了优化。  
+优化后的子设备会对最靠近它的父节点发送入网请求，解决多网络入网难的问题。  
+如果你想让你的zigbee程序拥有其它更好的体验请联系我们http://afteriot.com
 
 # 评估板程序发现存在以下两个问题：
 
