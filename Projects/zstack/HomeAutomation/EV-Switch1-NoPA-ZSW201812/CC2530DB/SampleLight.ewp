@@ -302,7 +302,6 @@
         </option>
         <option>
           <name>CCDefines</name>
-          <state>HAL_PA_LNA_CC2592</state>
           <state>HAL_ASSERT_RESET</state>
           <state>OSC32K_CRYSTAL_INSTALLED=FALSE</state>
           <state>MT_UART_DEFAULT_OVERFLOW=FALSE</state>

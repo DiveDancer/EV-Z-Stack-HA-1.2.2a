@@ -380,7 +380,7 @@ void MT_UartProcessZAppData ( uint8 port, uint8 event )
       if ((MT_UartZAppRxStatus == MT_UART_ZAPP_RX_READY ) && (length != 0))
       {
         /* Disable App flow control until it processes the current data */
-         MT_UartAppFlowControl (MT_UART_ZAPP_RX_NOT_READY);
+        //MT_UartAppFlowControl (MT_UART_ZAPP_RX_NOT_READY);
 
         /* 2 more bytes are added, 1 for CMD type, other for length */
         msg_ptr = (osal_event_hdr_t *)osal_msg_allocate( length + sizeof(osal_event_hdr_t) );
