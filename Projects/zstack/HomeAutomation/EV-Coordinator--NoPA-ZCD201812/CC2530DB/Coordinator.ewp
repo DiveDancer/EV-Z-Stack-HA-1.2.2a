@@ -324,7 +324,6 @@
           <state>ZCL_DIAGNOSTIC</state>
           <state>FEATURE_SYSTEM_STATS</state>
           <state>HAL_LCD=FALSE</state>
-          <state>MT_UART_DEFAULT_BAUDRATE=HAL_UART_BR_115200</state>
         </option>
         <option>
           <name>CCPreprocFile</name>

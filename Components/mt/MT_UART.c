@@ -197,13 +197,14 @@ void MT_UartProcessZToolData ( uint8 port, uint8 event )
   uint8  ch;
   uint8  bytesInRxBuffer;
   static uint8  checkFCS = 0x00;
-  
   (void)event;  // Intentionally unreferenced parameter
-
   while (Hal_UART_RxBufLen(port))
   {
+    if(U0CSR&(1<<4))//uart error occur
+    {
+      Onboard_soft_reset();
+    }
     HalUARTRead (port, &ch, 1);
-
     switch (state)
     {
       case SOP_STATE:
